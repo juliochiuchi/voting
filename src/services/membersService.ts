@@ -1,5 +1,6 @@
 import { supabaseHttp } from "@/services/supabaseHttp"
 import type { Member } from "@/types/member"
+import { toPostgrestInFilter } from "@/services/postgrestFilters"
 
 type MemberRow = Record<string, unknown>
 
@@ -33,6 +34,20 @@ export async function listActiveMembers() {
       select: "id,cpf,name,status",
       status: "eq.ACTIVE",
       order: "name.asc",
+    },
+  })
+
+  return response.data.map(normalizeMember)
+}
+
+export async function listMembersByIds(memberIds: string[]) {
+  if (memberIds.length === 0) return []
+
+  const response = await supabaseHttp.get<MemberApi[]>("/members", {
+    params: {
+      select: "id,cpf,name,status",
+      id: toPostgrestInFilter(memberIds),
+      limit: 2000,
     },
   })
 

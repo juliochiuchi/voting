@@ -272,6 +272,10 @@ function Vote() {
         voterCpf: user.cpf,
         memberIds: validation.data.memberIds,
       })
+      window.sessionStorage.setItem(
+        "voting:lastWatchSelection",
+        JSON.stringify({ electionId, roundId }),
+      )
       toast({
         title: "Voto confirmado",
         description: "Redirecionando para a tela de acompanhamento.",

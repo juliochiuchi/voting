@@ -17,6 +17,8 @@ type ListVotingRecordsInput = {
 type VotingRecordApi = Omit<VotingRecord, "id_election" | "id_round"> & {
   id_election: string | number
   id_round: string | number
+  cpf: string | number | null
+  ip: string | null
 }
 
 type ElectionApi = Omit<Election, "type_election"> & { type_election: string | number }
@@ -28,6 +30,8 @@ function normalizeVotingRecord(record: VotingRecordApi): VotingRecord {
     ...record,
     id_election: String(record.id_election),
     id_round: String(record.id_round),
+    cpf: record.cpf ? String(record.cpf) : "",
+    ip: record.ip ? String(record.ip) : "",
   }
 }
 
@@ -175,11 +179,10 @@ export async function listVotingRecordsForAdmin(
       id: record.id,
       electionName: election?.name ?? "—",
       roundNumber: round?.round_number ? String(round.round_number) : "—",
-      cpf: record.cpf,
-      ip: record.ip,
+      cpf: record.cpf.trim() ? record.cpf : "Staff",
+      ip: record.ip.trim() ? record.ip : "-",
     }
   })
 
   return { items, total }
 }
-
