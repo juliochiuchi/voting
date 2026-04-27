@@ -29,6 +29,27 @@ export async function listRoundsByElectionId(electionId: string) {
   return response.data
 }
 
+export async function findRoundByElectionAndId({
+  electionId,
+  roundId,
+}: {
+  electionId: string
+  roundId: string
+}) {
+  const response = await supabaseHttp.get<Round[]>("/rounds", {
+    params: {
+      select:
+        "id,id_election,round_number,total_numbers_votes_per_round,maximum_number_votes_per_ballot,status",
+      id: `eq.${roundId}`,
+      id_election: `eq.${electionId}`,
+      limit: 1,
+    },
+  })
+
+  const [round] = response.data
+  return round ?? null
+}
+
 export async function createRound(input: CreateRoundInput) {
   const roundToCreate: CreateRoundInput = {
     ...input,

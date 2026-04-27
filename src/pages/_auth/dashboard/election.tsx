@@ -37,6 +37,7 @@ import {
   updateElection,
 } from "@/services/electionsService"
 import { listElectionTypes } from "@/services/electionTypesService"
+import { listRoundsByElectionId } from "@/services/roundsService"
 import { cn } from "@/lib/utils"
 
 export const Route = createFileRoute("/_auth/dashboard/election")({
@@ -100,6 +101,10 @@ function Election() {
     React.useState<Election | null>(null)
   const [isDeleting, setIsDeleting] = React.useState(false)
   const [isRulesAlertVisible, setIsRulesAlertVisible] = React.useState(true)
+  const [editingElectionHasRounds, setEditingElectionHasRounds] =
+    React.useState(false)
+  const [isCheckingElectionRounds, setIsCheckingElectionRounds] =
+    React.useState(false)
 
   const editingElection = React.useMemo(() => {
     if (!editingElectionId) return null
@@ -151,6 +156,8 @@ function Election() {
     const normalizedStatus = String(editingElection.status ?? "").toUpperCase()
     return normalizedStatus === "COMPLETED" || normalizedStatus === "CANCELLED"
   }, [editingElection])
+
+  const isEditLockedByRounds = Boolean(editingElection && editingElectionHasRounds)
 
   const isCreateElectionDisabled =
     isLoading || isLoadingElectionTypes || hasElectionInProgress
@@ -284,6 +291,8 @@ function Election() {
       if (!loaded) return
     }
     setEditingElectionId(null)
+    setEditingElectionHasRounds(false)
+    setIsCheckingElectionRounds(false)
     form.reset({
       name: "",
       date: new Date(),
@@ -301,6 +310,8 @@ function Election() {
       const loaded = await loadElectionTypes()
       if (!loaded) return
     }
+    setIsCheckingElectionRounds(true)
+    setEditingElectionHasRounds(false)
     setEditingElectionId(election.id)
     form.reset({
       name: election.name ?? "",
@@ -312,6 +323,23 @@ function Election() {
       numberCoro: String(election.number_coro ?? ""),
     })
     setIsModalOpen(true)
+
+    void (async () => {
+      try {
+        const rounds = await listRoundsByElectionId(election.id)
+        setEditingElectionHasRounds(rounds.length > 0)
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Erro inesperado"
+        toast({
+          title: "Falha ao verificar rodadas da eleição",
+          description: message,
+          variant: "destructive",
+        })
+        setEditingElectionHasRounds(true)
+      } finally {
+        setIsCheckingElectionRounds(false)
+      }
+    })()
   }
 
   async function onSubmit(values: ElectionFormValues) {
@@ -332,20 +360,26 @@ function Election() {
         return
       }
 
-      const payload = {
+      const statusToSend = editingElection
+        ? values.status ?? String(editingElection.status ?? "").toUpperCase()
+        : "OPEN"
+
+      const fullPayload = {
         name: values.name,
         date: dayjs(values.date).format("YYYY-MM-DD"),
         type_election: values.typeElectionId,
         number_votes_needed_elected: Number(values.numberVotesNeededElected),
         total_number_voters: Number(values.totalNumberVoters),
         number_coro: Number(values.numberCoro),
-        status: editingElection
-          ? values.status ?? String(editingElection.status ?? "").toUpperCase()
-          : "OPEN",
+        status: statusToSend,
       } satisfies Omit<Election, "id">
 
       if (editingElection) {
-        const updated = await updateElection(editingElection.id, payload)
+        const updatePayload = isEditLockedByRounds
+          ? ({ name: values.name, status: statusToSend } satisfies Partial<Omit<Election, "id">>)
+          : fullPayload
+
+        const updated = await updateElection(editingElection.id, updatePayload)
         if (!updated) {
           throw new Error("A atualização da eleição não retornou a representação")
         }
@@ -354,7 +388,7 @@ function Election() {
           description: "Alterações salvas com sucesso.",
         })
       } else {
-        const created = await createElection(payload)
+        const created = await createElection(fullPayload)
         if (!created) {
           throw new Error("A criação da eleição não retornou a representação")
         }
@@ -756,7 +790,11 @@ function Election() {
         open={isModalOpen}
         onOpenChange={(open) => {
           setIsModalOpen(open)
-          if (!open) form.reset()
+          if (!open) {
+            setEditingElectionHasRounds(false)
+            setIsCheckingElectionRounds(false)
+            form.reset()
+          }
         }}
         title={editingElection ? "Editar eleição" : "Nova eleição"}
         description={
@@ -782,7 +820,7 @@ function Election() {
             <Button
               type="submit"
               size="lg"
-              disabled={isSaving}
+              disabled={isSaving || isCheckingElectionRounds}
               form="election-form"
               className="h-11 rounded-2xl px-5"
             >
@@ -824,6 +862,7 @@ function Election() {
                         <Button
                           type="button"
                           variant="outline"
+                          disabled={isSaving || isCheckingElectionRounds || isEditLockedByRounds}
                           className="h-10 w-full justify-start gap-2 rounded-2xl bg-background/20 hover:bg-background/30"
                         >
                           <CalendarDays className="size-4" />
@@ -856,7 +895,12 @@ function Election() {
                   render={({ field }) => (
                     <Select
                       value={field.value || undefined}
-                      disabled={isLoadingElectionTypes}
+                      disabled={
+                        isLoadingElectionTypes ||
+                        isSaving ||
+                        isCheckingElectionRounds ||
+                        isEditLockedByRounds
+                      }
                       onValueChange={(value) => field.onChange(value)}
                     >
                       <SelectTrigger>
@@ -906,6 +950,7 @@ function Election() {
                     value={field.value}
                     onValueChange={(value) => field.onChange(value)}
                     placeholder="0"
+                    disabled={isSaving || isCheckingElectionRounds || isEditLockedByRounds}
                   />
                 )}
               />
@@ -924,6 +969,7 @@ function Election() {
                     value={field.value}
                     onValueChange={(value) => field.onChange(value)}
                     placeholder="0"
+                    disabled={isSaving || isCheckingElectionRounds || isEditLockedByRounds}
                   />
                 )}
               />
@@ -942,6 +988,7 @@ function Election() {
                     value={field.value}
                     onValueChange={(value) => field.onChange(value)}
                     placeholder="0"
+                    disabled={isSaving || isCheckingElectionRounds || isEditLockedByRounds}
                   />
                 )}
               />
