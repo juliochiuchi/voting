@@ -16,6 +16,19 @@ export async function listRounds() {
   return response.data
 }
 
+export async function listRoundsByElectionId(electionId: string) {
+  const response = await supabaseHttp.get<Round[]>("/rounds", {
+    params: {
+      select:
+        "id,id_election,round_number,total_numbers_votes_per_round,maximum_number_votes_per_ballot,status",
+      id_election: `eq.${electionId}`,
+      order: "round_number.desc",
+    },
+  })
+
+  return response.data
+}
+
 export async function createRound(input: CreateRoundInput) {
   const roundToCreate: CreateRoundInput = {
     ...input,

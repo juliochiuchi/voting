@@ -25,6 +25,8 @@ import { Route as AuthDashboardMembersRouteImport } from './pages/_auth/dashboar
 import { Route as AuthDashboardElectionRouteImport } from './pages/_auth/dashboard/election'
 import { Route as AuthDashboardElectedRouteImport } from './pages/_auth/dashboard/elected'
 import { Route as AppVoteElectionIdRouteImport } from './pages/_app/vote/$electionId'
+import { Route as AppRoundsElectionIdRouteImport } from './pages/_app/rounds/$electionId'
+import { Route as AppVoteElectionIdRoundIdRouteImport } from './pages/_app/vote/$electionId/$roundId'
 
 const AuthLayoutRoute = AuthLayoutRouteImport.update({
   id: '/_auth',
@@ -105,6 +107,17 @@ const AppVoteElectionIdRoute = AppVoteElectionIdRouteImport.update({
   path: '/vote/$electionId',
   getParentRoute: () => AppLayoutRoute,
 } as any)
+const AppRoundsElectionIdRoute = AppRoundsElectionIdRouteImport.update({
+  id: '/rounds/$electionId',
+  path: '/rounds/$electionId',
+  getParentRoute: () => AppLayoutRoute,
+} as any)
+const AppVoteElectionIdRoundIdRoute =
+  AppVoteElectionIdRoundIdRouteImport.update({
+    id: '/$roundId',
+    path: '/$roundId',
+    getParentRoute: () => AppVoteElectionIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
@@ -113,7 +126,8 @@ export interface FileRoutesByFullPath {
   '/elections': typeof AppElectionsRoute
   '/watch': typeof AppWatchRoute
   '/login': typeof AuthLoginRoute
-  '/vote/$electionId': typeof AppVoteElectionIdRoute
+  '/rounds/$electionId': typeof AppRoundsElectionIdRoute
+  '/vote/$electionId': typeof AppVoteElectionIdRouteWithChildren
   '/dashboard/elected': typeof AuthDashboardElectedRoute
   '/dashboard/election': typeof AuthDashboardElectionRoute
   '/dashboard/members': typeof AuthDashboardMembersRoute
@@ -121,6 +135,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/vote-registry': typeof AuthDashboardVoteRegistryRoute
   '/dashboard/votes': typeof AuthDashboardVotesRoute
   '/dashboard/': typeof AuthDashboardIndexRoute
+  '/vote/$electionId/$roundId': typeof AppVoteElectionIdRoundIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof AppIndexRoute
@@ -128,7 +143,8 @@ export interface FileRoutesByTo {
   '/elections': typeof AppElectionsRoute
   '/watch': typeof AppWatchRoute
   '/login': typeof AuthLoginRoute
-  '/vote/$electionId': typeof AppVoteElectionIdRoute
+  '/rounds/$electionId': typeof AppRoundsElectionIdRoute
+  '/vote/$electionId': typeof AppVoteElectionIdRouteWithChildren
   '/dashboard/elected': typeof AuthDashboardElectedRoute
   '/dashboard/election': typeof AuthDashboardElectionRoute
   '/dashboard/members': typeof AuthDashboardMembersRoute
@@ -136,6 +152,7 @@ export interface FileRoutesByTo {
   '/dashboard/vote-registry': typeof AuthDashboardVoteRegistryRoute
   '/dashboard/votes': typeof AuthDashboardVotesRoute
   '/dashboard': typeof AuthDashboardIndexRoute
+  '/vote/$electionId/$roundId': typeof AppVoteElectionIdRoundIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -147,7 +164,8 @@ export interface FileRoutesById {
   '/_app/watch': typeof AppWatchRoute
   '/_auth/login': typeof AuthLoginRoute
   '/_app/': typeof AppIndexRoute
-  '/_app/vote/$electionId': typeof AppVoteElectionIdRoute
+  '/_app/rounds/$electionId': typeof AppRoundsElectionIdRoute
+  '/_app/vote/$electionId': typeof AppVoteElectionIdRouteWithChildren
   '/_auth/dashboard/elected': typeof AuthDashboardElectedRoute
   '/_auth/dashboard/election': typeof AuthDashboardElectionRoute
   '/_auth/dashboard/members': typeof AuthDashboardMembersRoute
@@ -155,6 +173,7 @@ export interface FileRoutesById {
   '/_auth/dashboard/vote-registry': typeof AuthDashboardVoteRegistryRoute
   '/_auth/dashboard/votes': typeof AuthDashboardVotesRoute
   '/_auth/dashboard/': typeof AuthDashboardIndexRoute
+  '/_app/vote/$electionId/$roundId': typeof AppVoteElectionIdRoundIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -165,6 +184,7 @@ export interface FileRouteTypes {
     | '/elections'
     | '/watch'
     | '/login'
+    | '/rounds/$electionId'
     | '/vote/$electionId'
     | '/dashboard/elected'
     | '/dashboard/election'
@@ -173,6 +193,7 @@ export interface FileRouteTypes {
     | '/dashboard/vote-registry'
     | '/dashboard/votes'
     | '/dashboard/'
+    | '/vote/$electionId/$roundId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -180,6 +201,7 @@ export interface FileRouteTypes {
     | '/elections'
     | '/watch'
     | '/login'
+    | '/rounds/$electionId'
     | '/vote/$electionId'
     | '/dashboard/elected'
     | '/dashboard/election'
@@ -188,6 +210,7 @@ export interface FileRouteTypes {
     | '/dashboard/vote-registry'
     | '/dashboard/votes'
     | '/dashboard'
+    | '/vote/$electionId/$roundId'
   id:
     | '__root__'
     | '/_app'
@@ -198,6 +221,7 @@ export interface FileRouteTypes {
     | '/_app/watch'
     | '/_auth/login'
     | '/_app/'
+    | '/_app/rounds/$electionId'
     | '/_app/vote/$electionId'
     | '/_auth/dashboard/elected'
     | '/_auth/dashboard/election'
@@ -206,6 +230,7 @@ export interface FileRouteTypes {
     | '/_auth/dashboard/vote-registry'
     | '/_auth/dashboard/votes'
     | '/_auth/dashboard/'
+    | '/_app/vote/$electionId/$roundId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -327,15 +352,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppVoteElectionIdRouteImport
       parentRoute: typeof AppLayoutRoute
     }
+    '/_app/rounds/$electionId': {
+      id: '/_app/rounds/$electionId'
+      path: '/rounds/$electionId'
+      fullPath: '/rounds/$electionId'
+      preLoaderRoute: typeof AppRoundsElectionIdRouteImport
+      parentRoute: typeof AppLayoutRoute
+    }
+    '/_app/vote/$electionId/$roundId': {
+      id: '/_app/vote/$electionId/$roundId'
+      path: '/$roundId'
+      fullPath: '/vote/$electionId/$roundId'
+      preLoaderRoute: typeof AppVoteElectionIdRoundIdRouteImport
+      parentRoute: typeof AppVoteElectionIdRoute
+    }
   }
 }
+
+interface AppVoteElectionIdRouteChildren {
+  AppVoteElectionIdRoundIdRoute: typeof AppVoteElectionIdRoundIdRoute
+}
+
+const AppVoteElectionIdRouteChildren: AppVoteElectionIdRouteChildren = {
+  AppVoteElectionIdRoundIdRoute: AppVoteElectionIdRoundIdRoute,
+}
+
+const AppVoteElectionIdRouteWithChildren =
+  AppVoteElectionIdRoute._addFileChildren(AppVoteElectionIdRouteChildren)
 
 interface AppLayoutRouteChildren {
   AppBeginRoute: typeof AppBeginRoute
   AppElectionsRoute: typeof AppElectionsRoute
   AppWatchRoute: typeof AppWatchRoute
   AppIndexRoute: typeof AppIndexRoute
-  AppVoteElectionIdRoute: typeof AppVoteElectionIdRoute
+  AppRoundsElectionIdRoute: typeof AppRoundsElectionIdRoute
+  AppVoteElectionIdRoute: typeof AppVoteElectionIdRouteWithChildren
 }
 
 const AppLayoutRouteChildren: AppLayoutRouteChildren = {
@@ -343,7 +394,8 @@ const AppLayoutRouteChildren: AppLayoutRouteChildren = {
   AppElectionsRoute: AppElectionsRoute,
   AppWatchRoute: AppWatchRoute,
   AppIndexRoute: AppIndexRoute,
-  AppVoteElectionIdRoute: AppVoteElectionIdRoute,
+  AppRoundsElectionIdRoute: AppRoundsElectionIdRoute,
+  AppVoteElectionIdRoute: AppVoteElectionIdRouteWithChildren,
 }
 
 const AppLayoutRouteWithChildren = AppLayoutRoute._addFileChildren(

@@ -228,13 +228,13 @@ function Elections() {
                   )}
                   onClick={() => {
                     if (!isOpen) return
-                    navigate({ to: "/vote/$electionId", params: { electionId: election.id } })
+                    navigate({ to: "/rounds/$electionId", params: { electionId: election.id } })
                   }}
                   onKeyDown={(event) => {
                     if (!isOpen) return
                     if (event.key === "Enter" || event.key === " ") {
                       event.preventDefault()
-                      navigate({ to: "/vote/$electionId", params: { electionId: election.id } })
+                      navigate({ to: "/rounds/$electionId", params: { electionId: election.id } })
                     }
                   }}
                 >

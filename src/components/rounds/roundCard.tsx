@@ -19,6 +19,8 @@ export function RoundCard({
   showChevron = false,
   onDelete,
   showDelete = false,
+  isDisabled = false,
+  footerText = "Clique no card para editar.",
 }: {
   round: Round
   electionName: string
@@ -26,16 +28,27 @@ export function RoundCard({
   showChevron?: boolean
   onDelete?: () => void
   showDelete?: boolean
+  isDisabled?: boolean
+  footerText?: string
 }) {
   const normalizedStatus = normalizeRoundStatus(round.status)
 
   return (
     <Card
-      role="button"
-      tabIndex={0}
-      className="group relative flex min-h-[232px] w-full cursor-pointer flex-col rounded-3xl transition-colors hover:bg-card/40 lg:w-[calc(50%-0.5rem)] 2xl:w-[calc(33.333%-0.667rem)]"
-      onClick={onClick}
+      role={isDisabled ? undefined : "button"}
+      tabIndex={isDisabled ? -1 : 0}
+      className={cn(
+        "group relative flex min-h-[232px] w-full flex-col rounded-3xl transition-colors lg:w-[calc(50%-0.5rem)] 2xl:w-[calc(33.333%-0.667rem)]",
+        isDisabled
+          ? "cursor-not-allowed opacity-70"
+          : "cursor-pointer hover:bg-card/40",
+      )}
+      onClick={() => {
+        if (isDisabled) return
+        onClick()
+      }}
       onKeyDown={(event) => {
+        if (isDisabled) return
         if (event.key === "Enter" || event.key === " ") {
           event.preventDefault()
           onClick()
@@ -72,7 +85,7 @@ export function RoundCard({
                 <Trash2 className="size-4" />
               </Button>
             ) : null}
-            {showChevron ? (
+            {showChevron && !isDisabled ? (
               <div
                 className={cn(
                   "grid size-9 place-items-center rounded-2xl bg-white/5 text-muted-foreground transition-colors",
@@ -113,7 +126,7 @@ export function RoundCard({
             </div>
           </div>
           <div className="mt-auto text-xs text-muted-foreground">
-            Clique no card para editar.
+            {footerText}
           </div>
         </div>
       </CardContent>
