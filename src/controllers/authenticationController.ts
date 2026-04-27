@@ -3,18 +3,37 @@ import { findMemberByCpf } from "@/services/membersService"
 import { findUserByKeypass } from "@/services/usersService"
 import { getBestNameFromRow, getFirstNameFromName } from "@/lib/personName"
 
-export async function authenticateOwner(keypass: string): Promise<AuthenticatedUser> {
-  const ownerUser = await findUserByKeypass(keypass)
-  if (!ownerUser) {
-    throw new Error("Invalid access key")
+export async function authenticateKeypassUser(
+  keypass: string,
+): Promise<AuthenticatedUser> {
+  const user = await findUserByKeypass(keypass)
+  if (!user) throw new Error("Invalid access key")
+
+  const name = user.name ?? undefined
+  const firstName = name ? getFirstNameFromName(name) ?? undefined : undefined
+
+  if (user.rule === "Owner") {
+    return {
+      accessType: "owner",
+      hasAuthentication: true,
+      userId: user.id,
+      ownerUserId: user.id,
+      name,
+      firstName,
+    }
   }
 
-  return {
-    accessType: "owner",
-    hasAuthentication: true,
-    ownerUserId: ownerUser.id,
-    name: ownerUser.name ?? undefined,
+  if (user.rule === "Staff") {
+    return {
+      accessType: "staff",
+      hasAuthentication: false,
+      userId: user.id,
+      name,
+      firstName,
+    }
   }
+
+  throw new Error("Invalid access key")
 }
 
 export async function getMemberIdentityByCpf(cpf: string) {

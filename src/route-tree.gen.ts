@@ -13,6 +13,8 @@ import { Route as AuthLayoutRouteImport } from './pages/_auth/layout'
 import { Route as AppLayoutRouteImport } from './pages/_app/layout'
 import { Route as AppIndexRouteImport } from './pages/_app/index'
 import { Route as AuthLoginRouteImport } from './pages/_auth/login'
+import { Route as AppWatchRouteImport } from './pages/_app/watch'
+import { Route as AppElectionsRouteImport } from './pages/_app/elections'
 import { Route as AppBeginRouteImport } from './pages/_app/begin'
 import { Route as AuthDashboardLayoutRouteImport } from './pages/_auth/dashboard/layout'
 import { Route as AuthDashboardIndexRouteImport } from './pages/_auth/dashboard/index'
@@ -22,6 +24,7 @@ import { Route as AuthDashboardRoundRouteImport } from './pages/_auth/dashboard/
 import { Route as AuthDashboardMembersRouteImport } from './pages/_auth/dashboard/members'
 import { Route as AuthDashboardElectionRouteImport } from './pages/_auth/dashboard/election'
 import { Route as AuthDashboardElectedRouteImport } from './pages/_auth/dashboard/elected'
+import { Route as AppVoteElectionIdRouteImport } from './pages/_app/vote/$electionId'
 
 const AuthLayoutRoute = AuthLayoutRouteImport.update({
   id: '/_auth',
@@ -40,6 +43,16 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   id: '/login',
   path: '/login',
   getParentRoute: () => AuthLayoutRoute,
+} as any)
+const AppWatchRoute = AppWatchRouteImport.update({
+  id: '/watch',
+  path: '/watch',
+  getParentRoute: () => AppLayoutRoute,
+} as any)
+const AppElectionsRoute = AppElectionsRouteImport.update({
+  id: '/elections',
+  path: '/elections',
+  getParentRoute: () => AppLayoutRoute,
 } as any)
 const AppBeginRoute = AppBeginRouteImport.update({
   id: '/begin',
@@ -87,12 +100,20 @@ const AuthDashboardElectedRoute = AuthDashboardElectedRouteImport.update({
   path: '/elected',
   getParentRoute: () => AuthDashboardLayoutRoute,
 } as any)
+const AppVoteElectionIdRoute = AppVoteElectionIdRouteImport.update({
+  id: '/vote/$electionId',
+  path: '/vote/$electionId',
+  getParentRoute: () => AppLayoutRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/dashboard': typeof AuthDashboardLayoutRouteWithChildren
   '/begin': typeof AppBeginRoute
+  '/elections': typeof AppElectionsRoute
+  '/watch': typeof AppWatchRoute
   '/login': typeof AuthLoginRoute
+  '/vote/$electionId': typeof AppVoteElectionIdRoute
   '/dashboard/elected': typeof AuthDashboardElectedRoute
   '/dashboard/election': typeof AuthDashboardElectionRoute
   '/dashboard/members': typeof AuthDashboardMembersRoute
@@ -104,7 +125,10 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof AppIndexRoute
   '/begin': typeof AppBeginRoute
+  '/elections': typeof AppElectionsRoute
+  '/watch': typeof AppWatchRoute
   '/login': typeof AuthLoginRoute
+  '/vote/$electionId': typeof AppVoteElectionIdRoute
   '/dashboard/elected': typeof AuthDashboardElectedRoute
   '/dashboard/election': typeof AuthDashboardElectionRoute
   '/dashboard/members': typeof AuthDashboardMembersRoute
@@ -119,8 +143,11 @@ export interface FileRoutesById {
   '/_auth': typeof AuthLayoutRouteWithChildren
   '/_auth/dashboard': typeof AuthDashboardLayoutRouteWithChildren
   '/_app/begin': typeof AppBeginRoute
+  '/_app/elections': typeof AppElectionsRoute
+  '/_app/watch': typeof AppWatchRoute
   '/_auth/login': typeof AuthLoginRoute
   '/_app/': typeof AppIndexRoute
+  '/_app/vote/$electionId': typeof AppVoteElectionIdRoute
   '/_auth/dashboard/elected': typeof AuthDashboardElectedRoute
   '/_auth/dashboard/election': typeof AuthDashboardElectionRoute
   '/_auth/dashboard/members': typeof AuthDashboardMembersRoute
@@ -135,7 +162,10 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/begin'
+    | '/elections'
+    | '/watch'
     | '/login'
+    | '/vote/$electionId'
     | '/dashboard/elected'
     | '/dashboard/election'
     | '/dashboard/members'
@@ -147,7 +177,10 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/begin'
+    | '/elections'
+    | '/watch'
     | '/login'
+    | '/vote/$electionId'
     | '/dashboard/elected'
     | '/dashboard/election'
     | '/dashboard/members'
@@ -161,8 +194,11 @@ export interface FileRouteTypes {
     | '/_auth'
     | '/_auth/dashboard'
     | '/_app/begin'
+    | '/_app/elections'
+    | '/_app/watch'
     | '/_auth/login'
     | '/_app/'
+    | '/_app/vote/$electionId'
     | '/_auth/dashboard/elected'
     | '/_auth/dashboard/election'
     | '/_auth/dashboard/members'
@@ -206,6 +242,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/login'
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof AuthLayoutRoute
+    }
+    '/_app/watch': {
+      id: '/_app/watch'
+      path: '/watch'
+      fullPath: '/watch'
+      preLoaderRoute: typeof AppWatchRouteImport
+      parentRoute: typeof AppLayoutRoute
+    }
+    '/_app/elections': {
+      id: '/_app/elections'
+      path: '/elections'
+      fullPath: '/elections'
+      preLoaderRoute: typeof AppElectionsRouteImport
+      parentRoute: typeof AppLayoutRoute
     }
     '/_app/begin': {
       id: '/_app/begin'
@@ -270,17 +320,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthDashboardElectedRouteImport
       parentRoute: typeof AuthDashboardLayoutRoute
     }
+    '/_app/vote/$electionId': {
+      id: '/_app/vote/$electionId'
+      path: '/vote/$electionId'
+      fullPath: '/vote/$electionId'
+      preLoaderRoute: typeof AppVoteElectionIdRouteImport
+      parentRoute: typeof AppLayoutRoute
+    }
   }
 }
 
 interface AppLayoutRouteChildren {
   AppBeginRoute: typeof AppBeginRoute
+  AppElectionsRoute: typeof AppElectionsRoute
+  AppWatchRoute: typeof AppWatchRoute
   AppIndexRoute: typeof AppIndexRoute
+  AppVoteElectionIdRoute: typeof AppVoteElectionIdRoute
 }
 
 const AppLayoutRouteChildren: AppLayoutRouteChildren = {
   AppBeginRoute: AppBeginRoute,
+  AppElectionsRoute: AppElectionsRoute,
+  AppWatchRoute: AppWatchRoute,
   AppIndexRoute: AppIndexRoute,
+  AppVoteElectionIdRoute: AppVoteElectionIdRoute,
 }
 
 const AppLayoutRouteWithChildren = AppLayoutRoute._addFileChildren(

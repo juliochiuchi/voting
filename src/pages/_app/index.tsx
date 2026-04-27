@@ -16,7 +16,7 @@ function Index() {
       navigate({ to: "/dashboard", replace: true })
       return
     }
-    if (user?.accessType === "member") {
+    if (user?.accessType === "member" || user?.accessType === "staff") {
       navigate({ to: "/begin", replace: true })
       return
     }

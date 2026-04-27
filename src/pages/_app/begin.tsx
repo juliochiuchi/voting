@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
-import { DoorClosed, EyeOff, Play } from "lucide-react"
+import { DoorClosed, EyeOff, Play, TvMinimalPlay } from "lucide-react"
 import * as React from "react"
 
 import { ScreenShell } from "@/components/layout/screenShell"
@@ -18,10 +18,15 @@ function Begin() {
   const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = React.useState(false)
 
   const memberName =
-    user?.accessType === "member" ? (user.firstName ?? user.name ?? null) : null
+    user?.accessType === "member" || user?.accessType === "staff"
+      ? (user.firstName ?? user.name ?? null)
+      : null
+
+  const accessLabel =
+    user?.accessType === "staff" ? "Acesso de representante" : "Acesso de membro"
 
   React.useEffect(() => {
-    if (user && user.accessType !== "member") {
+    if (user && user.accessType !== "member" && user.accessType !== "staff") {
       navigate({ to: "/", replace: true })
     }
     if (!user) {
@@ -37,7 +42,7 @@ function Begin() {
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0">
                 <div className="text-sm font-medium text-muted-foreground">
-                  Acesso de membro
+                  {accessLabel}
                 </div>
                 <h1 className="mt-2 truncate text-3xl font-semibold tracking-tight">
                   {memberName ? `Olá, ${memberName}` : "Olá"}
@@ -68,9 +73,20 @@ function Begin() {
                 type="button"
                 size="lg"
                 className="h-12 rounded-2xl px-6 text-base shadow-[0_12px_40px_-18px_rgba(0,0,0,0.9)]"
+                onClick={() => navigate({ to: "/elections" })}
               >
                 <Play />
                 Iniciar
+              </Button>
+              <Button
+                type="button"
+                size="lg"
+                variant="outline"
+                className="h-12 rounded-2xl bg-background/15 px-6 text-base hover:bg-background/25"
+                onClick={() => navigate({ to: "/watch" })}
+              >
+                <TvMinimalPlay />
+                Assistir votação
               </Button>
             </div>
           </div>

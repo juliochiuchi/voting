@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 
 import {
-  authenticateOwner,
+  authenticateKeypassUser,
   createMemberUser,
   getMemberIdentityByCpf,
 } from "@/controllers/authenticationController"
@@ -81,7 +81,7 @@ function Login() {
       navigate({ to: "/dashboard", replace: true })
       return
     }
-    if (user?.accessType === "member") {
+    if (user?.accessType === "member" || user?.accessType === "staff") {
       navigate({ to: "/begin", replace: true })
     }
   }, [navigate, user])
@@ -89,13 +89,19 @@ function Login() {
   async function onSubmit(values: LoginFormValues) {
     try {
       if (values.accessType === "owner") {
-        const authenticatedUser = await authenticateOwner(values.keypass)
+        const authenticatedUser = await authenticateKeypassUser(values.keypass)
         setUser(authenticatedUser)
         toast({
           title: "Autenticado",
-          description: "Acesso de administrador validado com sucesso.",
+          description:
+            authenticatedUser.hasAuthentication
+              ? "Acesso administrativo validado com sucesso."
+              : "Acesso de representante configurado com sucesso.",
         })
-        navigate({ to: "/dashboard", replace: true })
+        navigate({
+          to: authenticatedUser.hasAuthentication ? "/dashboard" : "/begin",
+          replace: true,
+        })
         return
       }
 
@@ -195,7 +201,7 @@ function Login() {
                       }}
                     >
                       <KeyRound className="size-4" />
-                      Administrador
+                      Administrativo/Staff
                     </button>
                     <button
                       type="button"
@@ -240,6 +246,7 @@ function Login() {
                       <Input
                         id="keypass"
                         type="password"
+                        maxLength={30}
                         autoComplete="off"
                         placeholder="Digite sua chave de acesso"
                         {...form.register("keypass")}
@@ -257,6 +264,7 @@ function Login() {
                         id="cpf"
                         inputMode="numeric"
                         pattern="[0-9]*"
+                        maxLength={30}
                         autoComplete="off"
                         placeholder="Somente números"
                         {...cpfRegister}
@@ -295,7 +303,7 @@ function Login() {
                 </form>
 
                 <div className="text-xs text-muted-foreground">
-                  O acesso de administrador valida sua chave na API. O
+                  O acesso administrativo/staff valida sua chave na API. O
                   acesso de membro não autentica mas é identificado.
                 </div>
               </div>
