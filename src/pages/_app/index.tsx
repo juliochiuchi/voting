@@ -1,9 +1,27 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from "@tanstack/react-router"
+import * as React from "react"
 
-export const Route = createFileRoute('/_app/')({
+import { useAuthUser } from "@/contexts/authUserContext"
+
+export const Route = createFileRoute("/_app/")({
   component: Index,
 })
 
 function Index() {
-  return <div>Hello "/_app/"!</div>
+  const navigate = useNavigate()
+  const { user } = useAuthUser()
+
+  React.useEffect(() => {
+    if (user?.hasAuthentication) {
+      navigate({ to: "/dashboard", replace: true })
+      return
+    }
+    if (user?.accessType === "member") {
+      navigate({ to: "/begin", replace: true })
+      return
+    }
+    navigate({ to: "/login", replace: true })
+  }, [navigate, user])
+
+  return null
 }
