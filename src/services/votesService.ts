@@ -67,7 +67,7 @@ async function listMemberIdsByNameLike(memberNameFilter: string) {
 }
 
 async function listVotesPage(input: ListVotesInput) {
-  const { offset, end, headers } = buildRangeHeaders(input)
+  const { headers } = buildRangeHeaders(input)
 
   const memberIds = input.memberNameFilter
     ? await listMemberIdsByNameLike(input.memberNameFilter)
