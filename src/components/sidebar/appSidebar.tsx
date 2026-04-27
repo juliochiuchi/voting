@@ -12,6 +12,7 @@ import {
 } from "lucide-react"
 import { useEffect, useState } from "react"
 
+import { ConfirmActionModal } from "@/components/modal/confirmActionModal"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
@@ -46,9 +47,10 @@ const sidebarItems: SidebarItem[] = [
 export function AppSidebar() {
   const pathname = useRouterState({ select: (state) => state.location.pathname })
   const navigate = useNavigate()
-  const { clearUser } = useAuthUser()
+  const { user, clearUser } = useAuthUser()
   const { open } = useSidebar()
   const [isSidebarLoading, setIsSidebarLoading] = useState(true)
+  const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false)
 
   const isDashboardHomeActive = pathname === "/dashboard" || pathname === "/dashboard/"
 
@@ -81,7 +83,7 @@ export function AppSidebar() {
                 Votação
               </div>
               <div className="truncate text-xs text-muted-foreground">
-                Área do administrador
+                {user?.name ? `Olá, ${user.name}` : "Área do administrador"}
               </div>
             </div>
           )}
@@ -138,10 +140,7 @@ export function AppSidebar() {
             type="button"
             variant="outline"
             className="w-full justify-start gap-2 rounded-2xl bg-background/15 hover:bg-background/25"
-            onClick={() => {
-              clearUser()
-              navigate({ to: "/login", replace: true })
-            }}
+            onClick={() => setIsLogoutConfirmOpen(true)}
           >
             <LogOut className="size-4" />
             Sair
@@ -154,16 +153,27 @@ export function AppSidebar() {
               size="icon"
               aria-label="Sair"
               className="rounded-2xl bg-background/15 hover:bg-background/25"
-              onClick={() => {
-                clearUser()
-                navigate({ to: "/login", replace: true })
-              }}
+              onClick={() => setIsLogoutConfirmOpen(true)}
             >
               <LogOut className="size-4" />
             </Button>
           </div>
         )}
       </SidebarFooter>
+
+      <ConfirmActionModal
+        open={isLogoutConfirmOpen}
+        onOpenChange={setIsLogoutConfirmOpen}
+        title="Sair"
+        description="Tem certeza que deseja sair da área do administrador?"
+        cancelLabel="Cancelar"
+        confirmLabel="Sair"
+        confirmVariant="destructive"
+        onConfirm={() => {
+          clearUser()
+          navigate({ to: "/login", replace: true })
+        }}
+      />
     </Sidebar>
   )
 }

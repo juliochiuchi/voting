@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
-import { LoaderCircle, KeyRound, Users } from "lucide-react"
+import { LoaderCircle, KeyRound, Users, User, IdCard, BadgeCheck } from "lucide-react"
 import * as React from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -8,13 +8,23 @@ import { z } from "zod"
 import {
   authenticateOwner,
   createMemberUser,
+  getMemberIdentityByCpf,
 } from "@/controllers/authenticationController"
 import { useAuthUser } from "@/contexts/authUserContext"
 import { useToast } from "@/contexts/toastContext"
+import { formatCpf } from "@/lib/cpf"
 import { cn } from "@/lib/utils"
 import { ScreenShell } from "@/components/layout/screenShell"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
@@ -43,8 +53,16 @@ type LoginFormValues = z.infer<typeof loginSchema>
 
 function Login() {
   const navigate = useNavigate()
-  const { user, setUser } = useAuthUser()
+  const { user, setUser, clearUser } = useAuthUser()
   const { toast } = useToast()
+
+  const [memberConfirmOpen, setMemberConfirmOpen] = React.useState(false)
+  const [pendingMember, setPendingMember] = React.useState<{
+    cpf: string
+    name: string | null
+    firstName: string | null
+  } | null>(null)
+  const [isConfirmingMember, setIsConfirmingMember] = React.useState(false)
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -81,13 +99,29 @@ function Login() {
         return
       }
 
-      const memberUser = createMemberUser(values.cpf)
-      setUser(memberUser)
-      toast({
-        title: "Pronto",
-        description: "Acesso de membro configurado com sucesso.",
+      const identity = await getMemberIdentityByCpf(values.cpf)
+      if (!identity) {
+        clearUser()
+        form.setValue("cpf", "", {
+          shouldDirty: false,
+          shouldTouch: false,
+          shouldValidate: false,
+        })
+        toast({
+          title: "CPF não encontrado",
+          description: "Não identificamos esse CPF na base de membros.",
+          variant: "destructive",
+        })
+        navigate({ to: "/login", replace: true })
+        return
+      }
+
+      setPendingMember({
+        cpf: values.cpf,
+        name: identity.name,
+        firstName: identity.firstName,
       })
-      navigate({ to: "/begin", replace: true })
+      setMemberConfirmOpen(true)
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Erro inesperado"
@@ -108,12 +142,12 @@ function Login() {
           <div className="hidden lg:block">
             <div className="max-w-md">
               <div className="text-sm font-medium text-muted-foreground">
-                Inspirado na Apple TV
+                Votações da IPIM
               </div>
               <h1 className="mt-2 text-4xl font-semibold tracking-tight">
-                Acesso suave.
+                Acesso por ação.
                 <br />
-                Sem atrito.
+                Sem registro.
               </h1>
               <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
                 Selecione seu tipo de acesso e continue. O acesso de
@@ -261,14 +295,103 @@ function Login() {
                 </form>
 
                 <div className="text-xs text-muted-foreground">
-                  O acesso de administrador valida sua chave no Supabase. O
-                  acesso de membro não autentica.
+                  O acesso de administrador valida sua chave na API. O
+                  acesso de membro não autentica mas é identificado.
                 </div>
               </div>
             </CardContent>
           </Card>
         </div>
       </main>
+
+      <Dialog
+        open={memberConfirmOpen}
+        onOpenChange={(nextOpen) => {
+          setMemberConfirmOpen(nextOpen)
+          if (!nextOpen) setPendingMember(null)
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>É você?</DialogTitle>
+            <DialogDescription>
+              Confirme sua identidade para continuar como membro.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="mt-5 rounded-3xl border border-white/10 bg-background/10 p-4 shadow-[0_24px_90px_-40px_rgba(0,0,0,0.95)] backdrop-blur-xl">
+            <div className="flex items-start gap-4">
+              <div className="grid size-12 shrink-0 place-items-center rounded-2xl bg-white/10 ring-1 ring-white/10">
+                <User className="size-5 text-foreground/90" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="truncate text-base font-semibold tracking-tight">
+                    {pendingMember?.name ?? pendingMember?.firstName ?? "Membro"}
+                  </div>
+                  <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-muted-foreground">
+                    <IdCard className="size-3.5" />
+                    {pendingMember?.cpf ? formatCpf(pendingMember.cpf) : "CPF"}
+                  </div>
+                </div>
+                <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+                  <BadgeCheck className="size-3.5" />
+                  Se não for você, cancele e tente novamente.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              disabled={isConfirmingMember}
+              className="rounded-2xl bg-background/15 hover:bg-background/25"
+              onClick={() => {
+                setMemberConfirmOpen(false)
+                setPendingMember(null)
+                clearUser()
+                toast({
+                  title: "Login cancelado",
+                  description: "Você pode tentar novamente com outro CPF.",
+                })
+                navigate({ to: "/login", replace: true })
+              }}
+            >
+              Não sou eu
+            </Button>
+            <Button
+              type="button"
+              disabled={!pendingMember || isConfirmingMember}
+              className="rounded-2xl"
+              onClick={async () => {
+                if (!pendingMember) return
+                setIsConfirmingMember(true)
+                try {
+                  const memberUser = createMemberUser({
+                    cpf: pendingMember.cpf,
+                    name: pendingMember.name,
+                    firstName: pendingMember.firstName,
+                  })
+                  setUser(memberUser)
+                  setMemberConfirmOpen(false)
+                  setPendingMember(null)
+                  toast({
+                    title: "Pronto",
+                    description: "Acesso de membro configurado com sucesso.",
+                  })
+                  navigate({ to: "/begin", replace: true })
+                } finally {
+                  setIsConfirmingMember(false)
+                }
+              }}
+            >
+              Confirmar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </ScreenShell>
   )
 }

@@ -21,7 +21,7 @@ export function AppModal({
   onOpenChange: (open: boolean) => void
   title: string
   description?: string
-  children: React.ReactNode
+  children?: React.ReactNode
   footer?: React.ReactNode
 }) {
   return (
@@ -31,10 +31,9 @@ export function AppModal({
           <DialogTitle>{title}</DialogTitle>
           {description ? <DialogDescription>{description}</DialogDescription> : null}
         </DialogHeader>
-        <div className="mt-5">{children}</div>
+        {children ? <div className="mt-5">{children}</div> : null}
         {footer ? <DialogFooter>{footer}</DialogFooter> : null}
       </DialogContent>
     </Dialog>
   )
 }
-
