@@ -4,6 +4,7 @@ import "dayjs/locale/pt-br"
 import { CalendarDays, ChevronRight, User } from "lucide-react"
 import * as React from "react"
 
+import { RuleAlert } from "@/components/alerts/ruleAlert"
 import { ScreenShell } from "@/components/layout/screenShell"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -29,12 +30,11 @@ export const Route = createFileRoute("/_app/elections")({
 dayjs.locale("pt-br")
 
 const electionStatusLabelByValue: Record<string, string> = {
-  OPEN: "ABERTA",
-  PAUSED: "PAUSADA",
-  COMPLETED: "CONCLUÍDA",
-  CANCELLED: "CANCELADA",
-  CLOSED: "FECHADA",
-  DRAFT: "RASCUNHO",
+  OPEN: "Aberta",
+  COMPLETED: "Concluída",
+  CANCELLED: "Cancelada",
+  CLOSED: "Fechada",
+  DRAFT: "Rascunho",
 }
 
 function Elections() {
@@ -123,7 +123,7 @@ function Elections() {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
             <div className="w-full sm:w-[220px]">
               <Select value={effectiveSelectedYear} onValueChange={setSelectedYear}>
-                <SelectTrigger className="h-11 rounded-2xl">
+                <SelectTrigger>
                   <SelectValue placeholder="Ano" />
                 </SelectTrigger>
                 <SelectContent>
@@ -147,6 +147,11 @@ function Elections() {
             </Button>
           </div>
         </div>
+
+        <RuleAlert
+          title="Regra de seleção"
+          description={<>Apenas eleições abertas (ABERTA) podem ser selecionadas para votação.</>}
+        />
 
         {isLoading ? (
           <div className="flex flex-wrap gap-4">

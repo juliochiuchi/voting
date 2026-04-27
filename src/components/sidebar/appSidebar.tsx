@@ -80,7 +80,7 @@ export function AppSidebar() {
           ) : (
             <div className="min-w-0 leading-tight group-data-[state=closed]/sidebar:hidden animate-in fade-in-0 slide-in-from-left-1 duration-300">
               <div className="truncate text-sm font-semibold tracking-tight">
-                Votação
+                Gestão das Votações
               </div>
               <div className="truncate text-xs text-muted-foreground">
                 {user?.name ? `Olá, ${user.name}` : "Área do administrador"}

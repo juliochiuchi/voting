@@ -21,7 +21,7 @@ function SelectTrigger({
     <Select.Trigger
       data-slot="select-trigger"
       className={cn(
-        "flex h-10 w-full cursor-pointer items-center justify-between rounded-lg border border-input bg-background/40 px-3 py-2 text-sm text-foreground shadow-sm backdrop-blur-md outline-none transition-colors data-[placeholder]:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/40 disabled:cursor-not-allowed disabled:opacity-50",
+        "flex h-11 w-full cursor-pointer items-center justify-between rounded-2xl border border-input bg-background/40 px-3 py-2 text-sm text-foreground shadow-sm backdrop-blur-md outline-none transition-colors data-[placeholder]:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/40 disabled:cursor-not-allowed disabled:opacity-50",
         className,
       )}
       {...props}

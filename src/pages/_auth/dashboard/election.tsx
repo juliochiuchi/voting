@@ -45,13 +45,12 @@ export const Route = createFileRoute("/_auth/dashboard/election")({
 
 dayjs.locale("pt-br")
 
-const electionStatusOptions = ["OPEN", "PAUSED", "COMPLETED", "CANCELLED"] as const
+const electionStatusOptions = ["OPEN", "COMPLETED", "CANCELLED"] as const
 
 const electionStatusLabelByValue = {
-  OPEN: "ABERTA",
-  PAUSED: "PAUSADA",
-  COMPLETED: "CONCLUÍDA",
-  CANCELLED: "CANCELADA",
+  OPEN: "Aberta",
+  COMPLETED: "Concluída",
+  CANCELLED: "Cancelada",
 } satisfies Record<(typeof electionStatusOptions)[number], string>
 
 const electionFormSchema = z.object({
@@ -136,7 +135,7 @@ function Election() {
   const hasElectionInProgress = React.useMemo(() => {
     return elections.some((election) => {
       const normalizedStatus = String(election.status ?? "").toUpperCase()
-      return normalizedStatus === "OPEN" || normalizedStatus === "PAUSED"
+      return normalizedStatus === "OPEN"
     })
   }, [elections])
 
@@ -322,12 +321,12 @@ function Election() {
         editingElection &&
         hasOpenElection &&
         isEditingCompletedOrCancelled &&
-        (values.status === "OPEN" || values.status === "PAUSED")
+        values.status === "OPEN"
       ) {
         toast({
           title: "Status inválido",
           description:
-            "Já existe uma eleição ABERTA. Não é permitido reabrir ou pausar uma eleição concluída/cancelada enquanto houver uma eleição aberta.",
+            "Já existe uma eleição ABERTA. Não é permitido reabrir uma eleição concluída/cancelada enquanto houver uma eleição aberta.",
           variant: "destructive",
         })
         return
@@ -590,7 +589,7 @@ function Election() {
                   key={election.id}
                   role="button"
                   tabIndex={0}
-                  className="group relative w-full cursor-pointer rounded-3xl transition-colors hover:bg-card/40 lg:w-[calc(50%-0.5rem)] 2xl:w-[calc(33.333%-0.667rem)]"
+                  className="group relative flex min-h-[232px] w-full cursor-pointer flex-col rounded-3xl transition-colors hover:bg-card/40 lg:w-[calc(50%-0.5rem)] 2xl:w-[calc(33.333%-0.667rem)]"
                   onClick={() => void openEditModal(election)}
                   onKeyDown={(event) => {
                     if (event.key === "Enter" || event.key === " ") {
@@ -654,8 +653,8 @@ function Election() {
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="pt-0">
-                    <div className="flex flex-col gap-3">
+                  <CardContent className="flex flex-1 flex-col pt-0">
+                    <div className="flex flex-1 flex-col gap-3">
                       <div className="flex gap-2">
                         <div className="min-w-0 flex-1 rounded-2xl border border-white/10 bg-white/5 p-3">
                           <div className="text-[11px] text-muted-foreground">
@@ -682,7 +681,7 @@ function Election() {
                           </div>
                         </div>
                       </div>
-                      <div className="text-xs text-muted-foreground">
+                      <div className="mt-auto text-xs text-muted-foreground">
                         Clique no card para editar.
                       </div>
                     </div>
@@ -766,16 +765,31 @@ function Election() {
             : "Crie uma nova eleição com as configurações necessárias."
         }
         footer={
-          <Button
-            type="submit"
-            size="lg"
-            disabled={isSaving}
-            form="election-form"
-            className="h-11 rounded-2xl px-5"
-          >
-            {editingElection ? <Save /> : <Plus />}
-            {isSaving ? "Salvando" : editingElection ? "Salvar alterações" : "Criar"}
-          </Button>
+          <>
+            <Button
+              type="button"
+              variant="outline"
+              size="lg"
+              className="h-11 rounded-2xl px-5"
+              disabled={isSaving}
+              onClick={() => {
+                setIsModalOpen(false)
+                form.reset()
+              }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="submit"
+              size="lg"
+              disabled={isSaving}
+              form="election-form"
+              className="h-11 rounded-2xl px-5"
+            >
+              {editingElection ? <Save /> : <Plus />}
+              {isSaving ? "Salvando" : editingElection ? "Salvar" : "Criar"}
+            </Button>
+          </>
         }
       >
         <form
@@ -783,7 +797,7 @@ function Election() {
           className="flex flex-col gap-3"
           onSubmit={form.handleSubmit(onSubmit)}
         >
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1.5">
             <Label htmlFor="name">Nome</Label>
             <Input
               id="name"
@@ -792,14 +806,14 @@ function Election() {
               maxLength={30}
               {...form.register("name")}
             />
-            <div className="h-5 truncate text-sm text-destructive">
+            <div className="min-h-2 text-xs text-destructive">
               {form.formState.errors.name?.message ?? ""}
             </div>
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row">
             <div className="min-w-0 flex-1">
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-1.5">
                 <Label>Data</Label>
                 <Controller
                   control={form.control}
@@ -827,14 +841,14 @@ function Election() {
                     </Popover>
                   )}
                 />
-                <div className="h-5 truncate text-sm text-destructive">
+                <div className="min-h-2 text-xs text-destructive">
                   {form.formState.errors.date?.message ?? ""}
                 </div>
               </div>
             </div>
 
             <div className="min-w-0 flex-1">
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-1.5">
                 <Label>Tipo</Label>
                 <Controller
                   control={form.control}
@@ -874,15 +888,71 @@ function Election() {
                     </Select>
                   )}
                 />
-                <div className="h-5 truncate text-sm text-destructive">
+                <div className="min-h-2 text-xs text-destructive">
                   {form.formState.errors.typeElectionId?.message ?? ""}
                 </div>
               </div>
             </div>
           </div>
 
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <div className="flex flex-1 flex-col gap-1.5">
+              <Label>Votos necessários</Label>
+              <Controller
+                control={form.control}
+                name="numberVotesNeededElected"
+                render={({ field }) => (
+                  <NumericInput
+                    value={field.value}
+                    onValueChange={(value) => field.onChange(value)}
+                    placeholder="0"
+                  />
+                )}
+              />
+              <div className="min-h-2 text-xs text-destructive">
+                {form.formState.errors.numberVotesNeededElected?.message ?? ""}
+              </div>
+            </div>
+
+            <div className="flex flex-1 flex-col gap-1.5">
+              <Label>Total de votantes</Label>
+              <Controller
+                control={form.control}
+                name="totalNumberVoters"
+                render={({ field }) => (
+                  <NumericInput
+                    value={field.value}
+                    onValueChange={(value) => field.onChange(value)}
+                    placeholder="0"
+                  />
+                )}
+              />
+              <div className="min-h-2 text-xs text-destructive">
+                {form.formState.errors.totalNumberVoters?.message ?? ""}
+              </div>
+            </div>
+
+            <div className="flex flex-1 flex-col gap-1.5">
+              <Label>Quórum</Label>
+              <Controller
+                control={form.control}
+                name="numberCoro"
+                render={({ field }) => (
+                  <NumericInput
+                    value={field.value}
+                    onValueChange={(value) => field.onChange(value)}
+                    placeholder="0"
+                  />
+                )}
+              />
+              <div className="min-h-2 text-xs text-destructive">
+                {form.formState.errors.numberCoro?.message ?? ""}
+              </div>
+            </div>
+          </div>
+
           {editingElection ? (
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1.5">
               <Label>Status</Label>
               <Controller
                 control={form.control}
@@ -903,7 +973,7 @@ function Election() {
                           disabled={
                             hasOpenElection &&
                             isEditingCompletedOrCancelled &&
-                            (status === "OPEN" || status === "PAUSED")
+                            status === "OPEN"
                           }
                         >
                           {electionStatusLabelByValue[status]}
@@ -913,67 +983,16 @@ function Election() {
                   </Select>
                 )}
               />
-              <div className="h-5 truncate text-sm text-destructive">
+              {hasOpenElection && isEditingCompletedOrCancelled ? (
+                <div className="text-xs text-muted-foreground">
+                  Já existe uma eleição aberta. Conclua ou cancele a eleição em andamento para reabrir outra.
+                </div>
+              ) : null}
+              <div className="min-h-2 text-xs text-destructive">
                 {form.formState.errors.status?.message ?? ""}
               </div>
             </div>
           ) : null}
-
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <div className="flex flex-1 flex-col gap-2">
-              <Label>Votos necessários</Label>
-              <Controller
-                control={form.control}
-                name="numberVotesNeededElected"
-                render={({ field }) => (
-                  <NumericInput
-                    value={field.value}
-                    onValueChange={(value) => field.onChange(value)}
-                    placeholder="0"
-                  />
-                )}
-              />
-              <div className="h-5 truncate text-sm text-destructive">
-                {form.formState.errors.numberVotesNeededElected?.message ?? ""}
-              </div>
-            </div>
-
-            <div className="flex flex-1 flex-col gap-2">
-              <Label>Total de votantes</Label>
-              <Controller
-                control={form.control}
-                name="totalNumberVoters"
-                render={({ field }) => (
-                  <NumericInput
-                    value={field.value}
-                    onValueChange={(value) => field.onChange(value)}
-                    placeholder="0"
-                  />
-                )}
-              />
-              <div className="h-5 truncate text-sm text-destructive">
-                {form.formState.errors.totalNumberVoters?.message ?? ""}
-              </div>
-            </div>
-
-            <div className="flex flex-1 flex-col gap-2">
-              <Label>Quórum</Label>
-              <Controller
-                control={form.control}
-                name="numberCoro"
-                render={({ field }) => (
-                  <NumericInput
-                    value={field.value}
-                    onValueChange={(value) => field.onChange(value)}
-                    placeholder="0"
-                  />
-                )}
-              />
-              <div className="h-5 truncate text-sm text-destructive">
-                {form.formState.errors.numberCoro?.message ?? ""}
-              </div>
-            </div>
-          </div>
         </form>
       </AppModal>
     </div>
