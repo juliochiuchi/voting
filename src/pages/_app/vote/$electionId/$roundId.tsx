@@ -13,6 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { useAuthUser } from "@/contexts/authUserContext"
 import { useToast } from "@/contexts/toastContext"
 import { useDebouncedValue } from "@/hooks/useDebouncedValue"
+import { listElectedByElection } from "@/services/electedService"
 import { listActiveMembers } from "@/services/membersService"
 import { findRoundByElectionAndId } from "@/services/roundsService"
 import { submitBallot } from "@/services/voteBallotService"
@@ -177,9 +178,20 @@ function Vote() {
             }
           }
 
-          const nextMembers = await listActiveMembers()
+          const [nextMembers, electedByElection] = await Promise.all([
+            listActiveMembers(),
+            listElectedByElection({ electionId }),
+          ])
+
+          const electedMemberIds = new Set(
+            electedByElection
+              .filter((row) => normalizeStatus(row.status) === "ELECTED")
+              .map((row) => row.id_member),
+          )
+
+          const availableMembers = nextMembers.filter((member) => !electedMemberIds.has(member.id))
           setRound(nextRound)
-          setMembers(nextMembers)
+          setMembers(availableMembers)
         } catch (error) {
           const message = error instanceof Error ? error.message : "Erro inesperado"
           toast({
