@@ -70,7 +70,7 @@ function VoteRegistry() {
   }, [debouncedCpfFilter, debouncedElectionNameFilter, debouncedRoundNumberFilter, page, toast])
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-6 py-14">
+    <main className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
       <div className="mb-6 flex flex-col gap-4">
         <div>
           <div className="text-2xl font-semibold tracking-tight">Registro de votos</div>

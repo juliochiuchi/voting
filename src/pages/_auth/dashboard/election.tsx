@@ -448,7 +448,7 @@ function Election() {
   }
 
   return (
-    <div className="min-h-dvh p-6">
+    <div className="min-h-dvh p-4 sm:p-6">
       <div className="mx-auto w-full max-w-7xl">
         <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>

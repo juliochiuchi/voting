@@ -505,7 +505,7 @@ function Watch() {
         </div>
 
         {selectableElections.length === 0 ? (
-          <Card className="w-full rounded-3xl">
+          <Card className="pb-6 w-full rounded-3xl">
             <CardHeader>
               <CardTitle>Nenhuma eleição disponível</CardTitle>
               <CardDescription>

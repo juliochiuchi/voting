@@ -21,39 +21,40 @@ export function TablePaginationControls({
   const canGoNext = safePage < safeTotalPages
 
   return (
-    <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <div className="text-xs text-muted-foreground">
+    <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <div className="order-2 text-left text-xs text-muted-foreground sm:order-1 sm:text-left">
         {isLoading ? "Carregando..." : `${totalItems} registro(s) encontrado(s)`}
       </div>
 
-      <div className="flex items-center justify-between gap-3 sm:justify-end">
+      <div className="order-1 flex items-center justify-between gap-3 sm:order-2 sm:justify-end">
         <div className="text-xs text-muted-foreground">
           Página {safePage} de {safeTotalPages}
         </div>
-        <Button
-          type="button"
-          variant="outline"
-          size="icon-lg"
-          className="rounded-2xl"
-          disabled={!canGoPrevious || isLoading}
-          onClick={() => onPageChange(Math.max(1, safePage - 1))}
-          aria-label="Página anterior"
-        >
-          <ChevronLeft className="size-4" />
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          size="icon-lg"
-          className="rounded-2xl"
-          disabled={!canGoNext || isLoading}
-          onClick={() => onPageChange(Math.min(safeTotalPages, safePage + 1))}
-          aria-label="Próxima página"
-        >
-          <ChevronRight className="size-4" />
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="icon-lg"
+            className="rounded-2xl"
+            disabled={!canGoPrevious || isLoading}
+            onClick={() => onPageChange(Math.max(1, safePage - 1))}
+            aria-label="Página anterior"
+          >
+            <ChevronLeft className="size-4" />
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="icon-lg"
+            className="rounded-2xl"
+            disabled={!canGoNext || isLoading}
+            onClick={() => onPageChange(Math.min(safeTotalPages, safePage + 1))}
+            aria-label="Próxima página"
+          >
+            <ChevronRight className="size-4" />
+          </Button>
+        </div>
       </div>
     </div>
   )
 }
-

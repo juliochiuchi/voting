@@ -50,7 +50,9 @@ function Members() {
   const [isDeleting, setIsDeleting] = React.useState(false)
 
   React.useEffect(() => {
-    setPage(1)
+    if (page === 1) return
+    const timeoutId = window.setTimeout(() => setPage(1), 0)
+    return () => window.clearTimeout(timeoutId)
   }, [debouncedNameFilter, debouncedCpfFilter])
 
   function openCreateModal() {
@@ -68,7 +70,7 @@ function Members() {
     setIsDeleteModalOpen(true)
   }
 
-  async function refreshMembers(targetPage = page) {
+  const refreshMembers = React.useCallback(async (targetPage: number) => {
     setIsLoading(true)
     try {
       const response = await listMembersForAdmin({
@@ -90,19 +92,19 @@ function Members() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [debouncedCpfFilter, debouncedNameFilter, pageSize, toast])
 
   React.useEffect(() => {
     const timeoutId = window.setTimeout(() => {
-      void refreshMembers()
+      void refreshMembers(page)
     }, 0)
 
     return () => window.clearTimeout(timeoutId)
-  }, [debouncedCpfFilter, debouncedNameFilter, page])
+  }, [debouncedCpfFilter, debouncedNameFilter, page, refreshMembers])
 
   return (
     <>
-      <main className="mx-auto w-full max-w-7xl px-6 py-14">
+      <main className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
         <div className="mb-6 flex flex-col gap-4">
           <div>
             <div className="text-2xl font-semibold tracking-tight">Membros</div>

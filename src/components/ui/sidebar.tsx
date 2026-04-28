@@ -20,7 +20,10 @@ export function SidebarProvider({
   defaultOpen?: boolean
   children: React.ReactNode
 }) {
-  const [open, setOpen] = React.useState(defaultOpen)
+  const [open, setOpen] = React.useState(() => {
+    if (typeof window === "undefined") return defaultOpen
+    return window.matchMedia("(min-width: 1024px)").matches ? defaultOpen : false
+  })
 
   const toggle = React.useCallback(() => {
     setOpen((previousOpen) => !previousOpen)
@@ -56,8 +59,8 @@ export function Sidebar({
       data-slot="sidebar"
       data-state={open ? "open" : "closed"}
       className={cn(
-        "group/sidebar relative h-dvh shrink-0 border-r border-white/10 bg-sidebar/40 backdrop-blur-2xl transition-[width] duration-300",
-        open ? "w-[280px]" : "w-[72px]",
+        "group/sidebar fixed inset-y-0 left-0 z-50 h-dvh w-[280px] shrink-0 border-r border-white/10 bg-sidebar/40 backdrop-blur-2xl transition-transform duration-300 lg:relative lg:z-auto lg:h-auto lg:min-h-dvh lg:translate-x-0 lg:transition-[width] lg:duration-300",
+        open ? "translate-x-0 lg:w-[280px]" : "-translate-x-full lg:w-[72px]",
         className,
       )}
     >
@@ -107,6 +110,7 @@ export function SidebarFooter({
 
 export function SidebarTrigger({
   className,
+  children,
   ...props
 }: React.ComponentProps<"button">) {
   const { toggle } = useSidebar()
@@ -124,7 +128,9 @@ export function SidebarTrigger({
         props.onClick?.(event)
       }}
       {...props}
-    />
+    >
+      {children}
+    </button>
   )
 }
 
