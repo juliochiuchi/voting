@@ -2,6 +2,7 @@ import { Link, useNavigate, useRouterState } from "@tanstack/react-router"
 import {
   ClipboardList,
   Crown,
+  Languages,
   LogOut,
   PanelLeft,
   Trophy,
@@ -12,7 +13,15 @@ import {
 import { useEffect, useState } from "react"
 
 import { ConfirmActionModal } from "@/components/modal/confirmActionModal"
-import { Button } from "@/components/ui/button"
+import ipibIcon from "@/assets/IPIB-icon.png"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
   Sidebar,
@@ -52,6 +61,16 @@ export function AppSidebar() {
 
   const isElectedHomeActive = pathname === "/elected" || pathname === "/elected/"
 
+  const profileName = user?.name ?? user?.firstName ?? "Administrador"
+  const profileInitials = profileName
+    .split(" ")
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("")
+    .trim()
+
   useEffect(() => {
     const timeoutId = window.setTimeout(() => setIsSidebarLoading(false), 220)
     return () => window.clearTimeout(timeoutId)
@@ -66,10 +85,47 @@ export function AppSidebar() {
             : "flex flex-col items-center gap-2 px-2 py-4"
         }
       >
-        <div className={open ? "flex min-w-0 flex-1 items-center gap-3" : ""}>
-          <div className="grid size-10 shrink-0 place-items-center rounded-2xl bg-white/10 ring-1 ring-white/10">
-            <Crown className="size-5" />
-          </div>
+        <div className={open ? "flex min-w-0 flex-1 items-center gap-3" : "flex flex-col items-center gap-2"}>
+          {isSidebarLoading ? (
+            <Skeleton className="size-10 rounded-2xl" />
+          ) : (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  aria-label="Abrir menu do perfil"
+                  className="relative grid size-10 cursor-pointer place-items-center rounded-2xl outline-none focus-visible:ring-3 focus-visible:ring-ring/40"
+                >
+                  <Avatar className="size-10">
+                    <AvatarImage src={ipibIcon} alt="IPIB" />
+                    <AvatarFallback>{profileInitials || "AD"}</AvatarFallback>
+                  </Avatar>
+                  <span className="absolute bottom-0 right-0 size-3 rounded-full bg-emerald-500 ring-2 ring-black/35" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align={open ? "start" : "center"}
+                side="bottom"
+                className="w-[240px]"
+              >
+                <DropdownMenuItem disabled>
+                  <Languages className="size-4" />
+                  Idioma
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onSelect={(event) => {
+                    event.preventDefault()
+                    setIsLogoutConfirmOpen(true)
+                  }}
+                >
+                  <LogOut className="size-4" />
+                  Sair
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+
           {isSidebarLoading ? (
             <div className="min-w-0 leading-tight group-data-[state=closed]/sidebar:hidden">
               <Skeleton className="h-4 w-28 rounded-full" />
@@ -129,34 +185,7 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter>
-        {isSidebarLoading ? (
-          <div className={open ? "" : "flex justify-center"}>
-            <Skeleton className={open ? "h-10 w-full rounded-2xl" : "h-8 w-8 rounded-2xl"} />
-          </div>
-        ) : open ? (
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full justify-start gap-2 rounded-2xl bg-background/15 hover:bg-background/25"
-            onClick={() => setIsLogoutConfirmOpen(true)}
-          >
-            <LogOut className="size-4" />
-            Sair
-          </Button>
-        ) : (
-          <div className="flex justify-center">
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              aria-label="Sair"
-              className="rounded-2xl bg-background/15 hover:bg-background/25"
-              onClick={() => setIsLogoutConfirmOpen(true)}
-            >
-              <LogOut className="size-4" />
-            </Button>
-          </div>
-        )}
+        <div className={open ? "px-4 pb-4" : "px-2 pb-4"} />
       </SidebarFooter>
 
       <ConfirmActionModal
