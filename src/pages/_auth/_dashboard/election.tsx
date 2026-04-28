@@ -40,7 +40,7 @@ import { listElectionTypes } from "@/services/electionTypesService"
 import { listRoundsByElectionId } from "@/services/roundsService"
 import { cn } from "@/lib/utils"
 
-export const Route = createFileRoute("/_auth/dashboard/election")({
+export const Route = createFileRoute("/_auth/_dashboard/election")({
   component: Election,
 })
 

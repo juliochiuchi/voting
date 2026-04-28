@@ -16,14 +16,13 @@ import { Route as AuthLoginRouteImport } from './pages/_auth/login'
 import { Route as AppWatchRouteImport } from './pages/_app/watch'
 import { Route as AppElectionsRouteImport } from './pages/_app/elections'
 import { Route as AppBeginRouteImport } from './pages/_app/begin'
-import { Route as AuthDashboardLayoutRouteImport } from './pages/_auth/dashboard/layout'
-import { Route as AuthDashboardIndexRouteImport } from './pages/_auth/dashboard/index'
-import { Route as AuthDashboardVotesRouteImport } from './pages/_auth/dashboard/votes'
-import { Route as AuthDashboardVoteRegistryRouteImport } from './pages/_auth/dashboard/vote-registry'
-import { Route as AuthDashboardRoundRouteImport } from './pages/_auth/dashboard/round'
-import { Route as AuthDashboardMembersRouteImport } from './pages/_auth/dashboard/members'
-import { Route as AuthDashboardElectionRouteImport } from './pages/_auth/dashboard/election'
-import { Route as AuthDashboardElectedRouteImport } from './pages/_auth/dashboard/elected'
+import { Route as AuthDashboardLayoutRouteImport } from './pages/_auth/_dashboard/layout'
+import { Route as AuthDashboardVotesRouteImport } from './pages/_auth/_dashboard/votes'
+import { Route as AuthDashboardVoteRegistryRouteImport } from './pages/_auth/_dashboard/vote-registry'
+import { Route as AuthDashboardRoundRouteImport } from './pages/_auth/_dashboard/round'
+import { Route as AuthDashboardMembersRouteImport } from './pages/_auth/_dashboard/members'
+import { Route as AuthDashboardElectionRouteImport } from './pages/_auth/_dashboard/election'
+import { Route as AuthDashboardElectedRouteImport } from './pages/_auth/_dashboard/elected'
 import { Route as AppVoteElectionIdRouteImport } from './pages/_app/vote/$electionId'
 import { Route as AppRoundsElectionIdRouteImport } from './pages/_app/rounds/$electionId'
 import { Route as AppVoteElectionIdRoundIdRouteImport } from './pages/_app/vote/$electionId/$roundId'
@@ -62,14 +61,8 @@ const AppBeginRoute = AppBeginRouteImport.update({
   getParentRoute: () => AppLayoutRoute,
 } as any)
 const AuthDashboardLayoutRoute = AuthDashboardLayoutRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+  id: '/_dashboard',
   getParentRoute: () => AuthLayoutRoute,
-} as any)
-const AuthDashboardIndexRoute = AuthDashboardIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AuthDashboardLayoutRoute,
 } as any)
 const AuthDashboardVotesRoute = AuthDashboardVotesRouteImport.update({
   id: '/votes',
@@ -121,20 +114,18 @@ const AppVoteElectionIdRoundIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
-  '/dashboard': typeof AuthDashboardLayoutRouteWithChildren
   '/begin': typeof AppBeginRoute
   '/elections': typeof AppElectionsRoute
   '/watch': typeof AppWatchRoute
   '/login': typeof AuthLoginRoute
   '/rounds/$electionId': typeof AppRoundsElectionIdRoute
   '/vote/$electionId': typeof AppVoteElectionIdRouteWithChildren
-  '/dashboard/elected': typeof AuthDashboardElectedRoute
-  '/dashboard/election': typeof AuthDashboardElectionRoute
-  '/dashboard/members': typeof AuthDashboardMembersRoute
-  '/dashboard/round': typeof AuthDashboardRoundRoute
-  '/dashboard/vote-registry': typeof AuthDashboardVoteRegistryRoute
-  '/dashboard/votes': typeof AuthDashboardVotesRoute
-  '/dashboard/': typeof AuthDashboardIndexRoute
+  '/elected': typeof AuthDashboardElectedRoute
+  '/election': typeof AuthDashboardElectionRoute
+  '/members': typeof AuthDashboardMembersRoute
+  '/round': typeof AuthDashboardRoundRoute
+  '/vote-registry': typeof AuthDashboardVoteRegistryRoute
+  '/votes': typeof AuthDashboardVotesRoute
   '/vote/$electionId/$roundId': typeof AppVoteElectionIdRoundIdRoute
 }
 export interface FileRoutesByTo {
@@ -145,20 +136,19 @@ export interface FileRoutesByTo {
   '/login': typeof AuthLoginRoute
   '/rounds/$electionId': typeof AppRoundsElectionIdRoute
   '/vote/$electionId': typeof AppVoteElectionIdRouteWithChildren
-  '/dashboard/elected': typeof AuthDashboardElectedRoute
-  '/dashboard/election': typeof AuthDashboardElectionRoute
-  '/dashboard/members': typeof AuthDashboardMembersRoute
-  '/dashboard/round': typeof AuthDashboardRoundRoute
-  '/dashboard/vote-registry': typeof AuthDashboardVoteRegistryRoute
-  '/dashboard/votes': typeof AuthDashboardVotesRoute
-  '/dashboard': typeof AuthDashboardIndexRoute
+  '/elected': typeof AuthDashboardElectedRoute
+  '/election': typeof AuthDashboardElectionRoute
+  '/members': typeof AuthDashboardMembersRoute
+  '/round': typeof AuthDashboardRoundRoute
+  '/vote-registry': typeof AuthDashboardVoteRegistryRoute
+  '/votes': typeof AuthDashboardVotesRoute
   '/vote/$electionId/$roundId': typeof AppVoteElectionIdRoundIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppLayoutRouteWithChildren
   '/_auth': typeof AuthLayoutRouteWithChildren
-  '/_auth/dashboard': typeof AuthDashboardLayoutRouteWithChildren
+  '/_auth/_dashboard': typeof AuthDashboardLayoutRouteWithChildren
   '/_app/begin': typeof AppBeginRoute
   '/_app/elections': typeof AppElectionsRoute
   '/_app/watch': typeof AppWatchRoute
@@ -166,33 +156,30 @@ export interface FileRoutesById {
   '/_app/': typeof AppIndexRoute
   '/_app/rounds/$electionId': typeof AppRoundsElectionIdRoute
   '/_app/vote/$electionId': typeof AppVoteElectionIdRouteWithChildren
-  '/_auth/dashboard/elected': typeof AuthDashboardElectedRoute
-  '/_auth/dashboard/election': typeof AuthDashboardElectionRoute
-  '/_auth/dashboard/members': typeof AuthDashboardMembersRoute
-  '/_auth/dashboard/round': typeof AuthDashboardRoundRoute
-  '/_auth/dashboard/vote-registry': typeof AuthDashboardVoteRegistryRoute
-  '/_auth/dashboard/votes': typeof AuthDashboardVotesRoute
-  '/_auth/dashboard/': typeof AuthDashboardIndexRoute
+  '/_auth/_dashboard/elected': typeof AuthDashboardElectedRoute
+  '/_auth/_dashboard/election': typeof AuthDashboardElectionRoute
+  '/_auth/_dashboard/members': typeof AuthDashboardMembersRoute
+  '/_auth/_dashboard/round': typeof AuthDashboardRoundRoute
+  '/_auth/_dashboard/vote-registry': typeof AuthDashboardVoteRegistryRoute
+  '/_auth/_dashboard/votes': typeof AuthDashboardVotesRoute
   '/_app/vote/$electionId/$roundId': typeof AppVoteElectionIdRoundIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/dashboard'
     | '/begin'
     | '/elections'
     | '/watch'
     | '/login'
     | '/rounds/$electionId'
     | '/vote/$electionId'
-    | '/dashboard/elected'
-    | '/dashboard/election'
-    | '/dashboard/members'
-    | '/dashboard/round'
-    | '/dashboard/vote-registry'
-    | '/dashboard/votes'
-    | '/dashboard/'
+    | '/elected'
+    | '/election'
+    | '/members'
+    | '/round'
+    | '/vote-registry'
+    | '/votes'
     | '/vote/$electionId/$roundId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -203,19 +190,18 @@ export interface FileRouteTypes {
     | '/login'
     | '/rounds/$electionId'
     | '/vote/$electionId'
-    | '/dashboard/elected'
-    | '/dashboard/election'
-    | '/dashboard/members'
-    | '/dashboard/round'
-    | '/dashboard/vote-registry'
-    | '/dashboard/votes'
-    | '/dashboard'
+    | '/elected'
+    | '/election'
+    | '/members'
+    | '/round'
+    | '/vote-registry'
+    | '/votes'
     | '/vote/$electionId/$roundId'
   id:
     | '__root__'
     | '/_app'
     | '/_auth'
-    | '/_auth/dashboard'
+    | '/_auth/_dashboard'
     | '/_app/begin'
     | '/_app/elections'
     | '/_app/watch'
@@ -223,13 +209,12 @@ export interface FileRouteTypes {
     | '/_app/'
     | '/_app/rounds/$electionId'
     | '/_app/vote/$electionId'
-    | '/_auth/dashboard/elected'
-    | '/_auth/dashboard/election'
-    | '/_auth/dashboard/members'
-    | '/_auth/dashboard/round'
-    | '/_auth/dashboard/vote-registry'
-    | '/_auth/dashboard/votes'
-    | '/_auth/dashboard/'
+    | '/_auth/_dashboard/elected'
+    | '/_auth/_dashboard/election'
+    | '/_auth/_dashboard/members'
+    | '/_auth/_dashboard/round'
+    | '/_auth/_dashboard/vote-registry'
+    | '/_auth/_dashboard/votes'
     | '/_app/vote/$electionId/$roundId'
   fileRoutesById: FileRoutesById
 }
@@ -289,59 +274,52 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBeginRouteImport
       parentRoute: typeof AppLayoutRoute
     }
-    '/_auth/dashboard': {
-      id: '/_auth/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
+    '/_auth/_dashboard': {
+      id: '/_auth/_dashboard'
+      path: ''
+      fullPath: '/'
       preLoaderRoute: typeof AuthDashboardLayoutRouteImport
       parentRoute: typeof AuthLayoutRoute
     }
-    '/_auth/dashboard/': {
-      id: '/_auth/dashboard/'
-      path: '/'
-      fullPath: '/dashboard/'
-      preLoaderRoute: typeof AuthDashboardIndexRouteImport
-      parentRoute: typeof AuthDashboardLayoutRoute
-    }
-    '/_auth/dashboard/votes': {
-      id: '/_auth/dashboard/votes'
+    '/_auth/_dashboard/votes': {
+      id: '/_auth/_dashboard/votes'
       path: '/votes'
-      fullPath: '/dashboard/votes'
+      fullPath: '/votes'
       preLoaderRoute: typeof AuthDashboardVotesRouteImport
       parentRoute: typeof AuthDashboardLayoutRoute
     }
-    '/_auth/dashboard/vote-registry': {
-      id: '/_auth/dashboard/vote-registry'
+    '/_auth/_dashboard/vote-registry': {
+      id: '/_auth/_dashboard/vote-registry'
       path: '/vote-registry'
-      fullPath: '/dashboard/vote-registry'
+      fullPath: '/vote-registry'
       preLoaderRoute: typeof AuthDashboardVoteRegistryRouteImport
       parentRoute: typeof AuthDashboardLayoutRoute
     }
-    '/_auth/dashboard/round': {
-      id: '/_auth/dashboard/round'
+    '/_auth/_dashboard/round': {
+      id: '/_auth/_dashboard/round'
       path: '/round'
-      fullPath: '/dashboard/round'
+      fullPath: '/round'
       preLoaderRoute: typeof AuthDashboardRoundRouteImport
       parentRoute: typeof AuthDashboardLayoutRoute
     }
-    '/_auth/dashboard/members': {
-      id: '/_auth/dashboard/members'
+    '/_auth/_dashboard/members': {
+      id: '/_auth/_dashboard/members'
       path: '/members'
-      fullPath: '/dashboard/members'
+      fullPath: '/members'
       preLoaderRoute: typeof AuthDashboardMembersRouteImport
       parentRoute: typeof AuthDashboardLayoutRoute
     }
-    '/_auth/dashboard/election': {
-      id: '/_auth/dashboard/election'
+    '/_auth/_dashboard/election': {
+      id: '/_auth/_dashboard/election'
       path: '/election'
-      fullPath: '/dashboard/election'
+      fullPath: '/election'
       preLoaderRoute: typeof AuthDashboardElectionRouteImport
       parentRoute: typeof AuthDashboardLayoutRoute
     }
-    '/_auth/dashboard/elected': {
-      id: '/_auth/dashboard/elected'
+    '/_auth/_dashboard/elected': {
+      id: '/_auth/_dashboard/elected'
       path: '/elected'
-      fullPath: '/dashboard/elected'
+      fullPath: '/elected'
       preLoaderRoute: typeof AuthDashboardElectedRouteImport
       parentRoute: typeof AuthDashboardLayoutRoute
     }
@@ -409,7 +387,6 @@ interface AuthDashboardLayoutRouteChildren {
   AuthDashboardRoundRoute: typeof AuthDashboardRoundRoute
   AuthDashboardVoteRegistryRoute: typeof AuthDashboardVoteRegistryRoute
   AuthDashboardVotesRoute: typeof AuthDashboardVotesRoute
-  AuthDashboardIndexRoute: typeof AuthDashboardIndexRoute
 }
 
 const AuthDashboardLayoutRouteChildren: AuthDashboardLayoutRouteChildren = {
@@ -419,7 +396,6 @@ const AuthDashboardLayoutRouteChildren: AuthDashboardLayoutRouteChildren = {
   AuthDashboardRoundRoute: AuthDashboardRoundRoute,
   AuthDashboardVoteRegistryRoute: AuthDashboardVoteRegistryRoute,
   AuthDashboardVotesRoute: AuthDashboardVotesRoute,
-  AuthDashboardIndexRoute: AuthDashboardIndexRoute,
 }
 
 const AuthDashboardLayoutRouteWithChildren =

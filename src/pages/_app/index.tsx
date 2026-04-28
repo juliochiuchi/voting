@@ -13,7 +13,7 @@ function Index() {
 
   React.useEffect(() => {
     if (user?.hasAuthentication) {
-      navigate({ to: "/dashboard", replace: true })
+      navigate({ to: "/elected", replace: true })
       return
     }
     if (user?.accessType === "member" || user?.accessType === "staff") {

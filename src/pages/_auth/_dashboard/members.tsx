@@ -18,7 +18,7 @@ import {
 } from "@/services/membersAdminService"
 import type { Member } from "@/types/member"
 
-export const Route = createFileRoute("/_auth/dashboard/members")({
+export const Route = createFileRoute("/_auth/_dashboard/members")({
   component: Members,
 })
 

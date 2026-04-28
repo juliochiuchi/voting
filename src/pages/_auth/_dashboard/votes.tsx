@@ -10,7 +10,7 @@ import { useDebouncedValue } from "@/hooks/useDebouncedValue"
 import { listVotesForAdmin } from "@/services/votesService"
 import type { VoteListItem } from "@/types/vote"
 
-export const Route = createFileRoute("/_auth/dashboard/votes")({
+export const Route = createFileRoute("/_auth/_dashboard/votes")({
   component: Votes,
 })
 

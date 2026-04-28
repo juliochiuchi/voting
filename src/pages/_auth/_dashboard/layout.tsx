@@ -5,7 +5,7 @@ import { AppSidebar } from "@/components/sidebar/appSidebar"
 import { SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sidebar"
 import { ScreenShell } from "@/components/layout/screenShell"
 
-export const Route = createFileRoute("/_auth/dashboard")({
+export const Route = createFileRoute("/_auth/_dashboard")({
   component: DashboardLayout,
 })
 

@@ -78,7 +78,7 @@ function Login() {
 
   React.useEffect(() => {
     if (user?.hasAuthentication) {
-      navigate({ to: "/dashboard", replace: true })
+      navigate({ to: "/elected", replace: true })
       return
     }
     if (user?.accessType === "member" || user?.accessType === "staff") {
@@ -99,7 +99,7 @@ function Login() {
               : "Acesso de representante configurado com sucesso.",
         })
         navigate({
-          to: authenticatedUser.hasAuthentication ? "/dashboard" : "/begin",
+          to: authenticatedUser.hasAuthentication ? "/elected" : "/begin",
           replace: true,
         })
         return
@@ -201,7 +201,8 @@ function Login() {
                       }}
                     >
                       <KeyRound className="size-4" />
-                      Administrativo/Staff
+                      <span className="sm:hidden">Admin/Staff</span>
+                      <span className="hidden sm:inline">Administrativo/Staff</span>
                     </button>
                     <button
                       type="button"

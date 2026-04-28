@@ -2,7 +2,6 @@ import { Link, useNavigate, useRouterState } from "@tanstack/react-router"
 import {
   ClipboardList,
   Crown,
-  Home,
   LogOut,
   PanelLeft,
   Trophy,
@@ -35,13 +34,12 @@ type SidebarItem = {
 }
 
 const sidebarItems: SidebarItem[] = [
-  { label: "Dashboard", to: "/dashboard", icon: Home },
-  { label: "Eleições", to: "/dashboard/election", icon: Crown },
-  { label: "Rodada", to: "/dashboard/round", icon: ClipboardList },
-  { label: "Votos", to: "/dashboard/votes", icon: Vote },
-  { label: "Membros", to: "/dashboard/members", icon: Users },
-  { label: "Eleitos", to: "/dashboard/elected", icon: Trophy },
-  { label: "Registro de votos", to: "/dashboard/vote-registry", icon: UserCheck },
+  { label: "Eleitos", to: "/elected", icon: Trophy },
+  { label: "Eleições", to: "/election", icon: Crown },
+  { label: "Rodada", to: "/round", icon: ClipboardList },
+  { label: "Votos", to: "/votes", icon: Vote },
+  { label: "Membros", to: "/members", icon: Users },
+  { label: "Registro de votos", to: "/vote-registry", icon: UserCheck },
 ]
 
 export function AppSidebar() {
@@ -52,7 +50,7 @@ export function AppSidebar() {
   const [isSidebarLoading, setIsSidebarLoading] = useState(true)
   const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false)
 
-  const isDashboardHomeActive = pathname === "/dashboard" || pathname === "/dashboard/"
+  const isElectedHomeActive = pathname === "/elected" || pathname === "/elected/"
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => setIsSidebarLoading(false), 220)
@@ -111,8 +109,8 @@ export function AppSidebar() {
             sidebarItems.map((item) => {
               const Icon = item.icon
               const isActive =
-                item.to === "/dashboard"
-                  ? isDashboardHomeActive
+                item.to === "/elected"
+                  ? isElectedHomeActive
                   : pathname === item.to
 
               return (
