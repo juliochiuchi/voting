@@ -1,73 +1,108 @@
-# React + TypeScript + Vite
+# Voting
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicação web para condução e apuração de votações com fluxo simplificado para membros (CPF) e área administrativa para gestão de eleições, rodadas e membros.
 
-Currently, two official plugins are available:
+## Objetivo
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Centralizar o processo de votação em uma interface simples, com:
 
-## React Compiler
+- Identificação rápida do membro (CPF) sem criação de conta
+- Seleção de eleições abertas e registro de votos
+- Acompanhamento da apuração e consolidação de eleitos
+- Gestão completa do ciclo eleitoral (admin)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tipos de usuários (3 perfis)
 
-## Expanding the ESLint configuration
+O sistema trabalha com três perfis de acesso:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Owner (Admin)**: entra por chave de acesso e possui autenticação administrativa. Pode gerenciar eleições, rodadas, membros, votos, registros e eleitos.
+- **Staff (Representante)**: entra por chave de acesso, sem acesso ao painel administrativo. Atua no fluxo operacional (ex.: acompanhar votação e realizar confirmações quando habilitado).
+- **Member (Membro)**: entra por CPF (identificação/validação na base de membros). Pode iniciar a votação, escolher a eleição aberta, votar e acompanhar a apuração.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Principais funcionalidades
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- **Login** por chave de acesso (admin/staff) ou CPF (membro)
+- **Seleção de eleição** (somente eleições com status OPEN ficam disponíveis para votação)
+- **Votação por rodadas**, com registro para contabilização (mantendo o voto desvinculado do nome na interface)
+- **Tela de acompanhamento (watch)** para apuração e visualização do resultado
+- **Painel administrativo** para gerenciar:
+  - Eleições (criação/edição/cancelamento)
+  - Rodadas (controle de status e andamento)
+  - Membros (base de eleitores)
+  - Votos e registro de votos
+  - Eleitos (consolidação e decisões)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Telas (exemplos)
+
+Área administrativa (owner/admin):
+
+![Área administrativa](./src/assets/area-owneradmin.png)
+
+Login de membro por CPF:
+
+![Login membro por CPF](./src/assets/area-login-member-cpf.png)
+
+Área do membro (fluxo de votação):
+
+![Área do membro](./src/assets/area-member.png)
+
+## Stack e bibliotecas
+
+- **Frontend**: React 19, TypeScript, Vite
+- **Roteamento**: TanStack Router (file-based routes)
+- **Estilização/UI**: Tailwind CSS v4, shadcn/ui, Radix UI, lucide-react
+- **Formulários e validação**: React Hook Form, Zod
+- **HTTP / Dados**: Axios
+- **Backend (dados)**: Supabase (consumo via PostgREST em `/rest/v1`)
+- **Utilitários**: dayjs (datas)
+
+## Arquitetura (visão rápida)
+
+- `src/pages`: rotas da aplicação (TanStack Router)
+- `src/services`: camada de acesso a dados (requests para Supabase/PostgREST)
+- `src/controllers`: regras de autenticação e orquestração de casos de uso
+- `src/components`: componentes de UI e domínios (membros, rodadas, votos, apuração)
+- `src/contexts`: estado global (usuário autenticado e toasts)
+
+## Como rodar localmente
+
+### Requisitos
+
+- Node.js (LTS)
+- npm
+
+### Variáveis de ambiente
+
+Crie um arquivo `.env` (ou `.env.local`) baseado em `.env-example`:
+
+```bash
+VITE_SUPABASE_URL=
+VITE_SUPABASE_PUBLISHABLE_KEY=
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Instalação e execução
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
+
+### Scripts úteis
+
+- `npm run dev`: ambiente local
+- `npm run build`: build de produção
+- `npm run preview`: preview do build
+- `npm run lint`: lint do projeto
+
+## Deploy
+
+Projeto configurado para SPA com Vercel (rewrites para `index.html`). Consulte [vercel.json](./vercel.json) para detalhes de build e output (`dist`).
+
+## Próximas melhorias (roadmap)
+
+- **TanStack Query**: migrar a camada de carregamento de dados (hoje baseada em `useEffect` + services) para TanStack Query, habilitando:
+  - cache, deduplicação e invalidação consistente
+  - refetch automático e estados de loading/error padronizados
+- **Atualização em “tempo real” da eleição/apuração**: implementar atualização contínua sem refresh manual, combinando TanStack Query com:
+  - `refetchInterval` (polling) como primeiro passo; e/ou
+  - Supabase Realtime (assinaturas) para atualização instantânea quando houver novos votos/alterações de rodada.
