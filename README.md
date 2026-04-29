@@ -40,7 +40,7 @@ O sistema trabalha com três perfis de acesso:
 
 Login de membro por CPF:
 
-![Login membro por CPF](./src/assets/area-login-member-cpf.png)
+![Login membro por CPF](./src/assets/confirm-login-member-cpf.png)
 
 Área do membro (fluxo de votação):
 
